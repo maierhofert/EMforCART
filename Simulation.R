@@ -55,7 +55,8 @@ ggplot(dat_under, aes(x = x, y = y, color = label)) +
 ggsave("plots/dat_underlying.pdf", height = 4, width = 7)
 
 ggplot(dat, aes(x = xobs, y = yobs, color = label)) +
-  geom_point()
+  geom_point() +
+  xlab("x") + ylab("y")
 ggsave("plots/dat.pdf", height = 4, width = 7)
 
 
@@ -79,7 +80,6 @@ datMCAR20 = MCAR(dat, 0.1)
 summary(datMCAR20)
 plot(datMCAR20$xobs, datMCAR20$yobs, col = datMCAR20$label)
 
-
 # logistic function
 logistic = function(x) {
   return(1 / (1 + exp(x)))
@@ -99,9 +99,20 @@ MAR = function(dat, prob_miss) {
   return(dat)
 }
 
+
 # 20% missing at random
 datMAR20 = MAR(dat, 0.2)
 plot(datMAR20$xobs, datMAR20$yobs, col = datMAR20$label)
+
+# plot MAR data missingness
+plot_dat = dat
+plot_dat$missing = !complete.cases(datMAR20)
+# plot data
+ggplot(plot_dat, aes(x = xobs, y = yobs, color = missing)) +
+  geom_point() +
+  scale_color_manual(values = c("forestgreen", "firebrick3"))
+ggsave("plots/dat_MAR.pdf", height = 4, width = 7)
+
 
 # impute means
 means = colMeans(datMAR20[,1:2], na.rm = TRUE)
