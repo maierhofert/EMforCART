@@ -1,7 +1,9 @@
 # simulation study
+source("EMforCART.R")
 
 # create data for random forest
 
+# #################################################################
 # underlying x and y
 x = runif(min = -1, max = 1, n = 200)
 y = runif(min = -1, max = 1, n = 200)
@@ -15,9 +17,31 @@ yobs = y + rnorm(200, sd = 1)
 
 # plot original data
 plot(xobs, yobs, col = label)
+plot(x, y, col = label)
 
 # data frame
 dat = data.frame(xobs = x, yobs = yobs, label = factor(label))
+
+# ###############################################################
+# alternative data
+# underlying x and y
+x = runif(min = -1, max = 1, n = 200)
+y = runif(min = -1, max = 1, n = 200)
+# true class label
+label = rep(1, 200)
+label[x < -0.5 | x > 0.5] = 2
+
+# observed x and y
+xobs = x + rnorm(200, sd = 0.5)
+yobs = y + rnorm(200, sd = 0.5)
+
+# plot original data
+plot(xobs, yobs, col = label)
+plot(x, y, col = label)
+
+# data frame
+dat = data.frame(xobs = xobs, yobs = yobs, label = factor(label))
+# ###############################################################
 
 # missing completely at random
 MCAR = function(dat, prob_miss) {
@@ -44,7 +68,7 @@ logistic = function(x) {
 }
 
 # 20% missing at random
-set.seed(123)
+set.seed(1234)
 MAR = function(dat, prob_miss) {
   for (i in 1:(ncol(dat) - 1)) {
     # samp = rbinom(n = nrow(dat), size = 1,
@@ -61,13 +85,18 @@ MAR = function(dat, prob_miss) {
 datMAR20 = MAR(dat, 0.2)
 plot(datMAR20$xobs, datMAR20$yobs, col = datMAR20$label)
 
+# impute means
+means = colMeans(datMAR20[,1:2], na.rm = TRUE)
+datImpMean = datMAR20
+datImpMean[is.na(datImpMean[,1]), 1] = means[1]
+datImpMean[is.na(datImpMean[,2]), 2] = means[2]
 
 library("rpart.plot")
 
 # set up bootstrap
-set.seed(1234)
+set.seed(123)
 res = data.frame(fold = 1:10, full_acc = 0, 
-                 EM_acc = 0, na_rm_acc = 0)
+                 EM_acc = 0, na_rm_acc = 0, na_imp_acc = 0)
 nfolds = 10
 
 fold_id = sample(rep(1:10, length.out = nrow(dat)), 
@@ -82,7 +111,7 @@ for (fold in 1:nfolds) {
   full_pred = predict(full, newdata = dat[test_ids,], type = "class")
   full_acc = mean(full_pred == dat[test_ids,"label"])
   res[fold, "full_acc"] = full_acc
-  # rpart.plot(fit)
+  # rpart.plot(full)
   
   # EM
   EM_fit = EM_rpart(label ~ xobs + yobs, 
@@ -99,10 +128,18 @@ for (fold in 1:nfolds) {
   na_rm_acc = mean(na_rm_pred == dat[test_ids,"label"])
   res[fold, "na_rm_acc"] = na_rm_acc
   # rpart.plot(fit_rm)
+  
+  # impute means
+  na_imp <- rpart(label ~ xobs + yobs, 
+                 data = datImpMean[train_ids,])
+  na_imp_pred = predict(na_rm, newdata = dat[test_ids,], type = "class")
+  na_imp_acc = mean(na_rm_pred == dat[test_ids,"label"])
+  res[fold, "na_imp_acc"] = na_rm_acc
+  
 }
 res
 
-#
+# average accuracy
 colMeans(res)
 
 
