@@ -1,7 +1,8 @@
 # simulation study
 source("EMforCART.R")
+library("ggplot2")
 
-# create data for random forest
+# create data for CART
 
 # #################################################################
 # underlying x and y
@@ -20,7 +21,12 @@ plot(xobs, yobs, col = label)
 plot(x, y, col = label)
 
 # data frame
-dat = data.frame(xobs = x, yobs = yobs, label = factor(label))
+dat_under = data.frame(x = x, y = y, label = factor(label))
+dat = data.frame(xobs = xobs, yobs = yobs, label = factor(label))
+
+# plot data
+ggplot(dat_under, aes(x = x, y = y, color = label)) +
+  geom_point()
 
 # ###############################################################
 # alternative data
@@ -40,7 +46,19 @@ plot(xobs, yobs, col = label)
 plot(x, y, col = label)
 
 # data frame
+dat_under = data.frame(x = x, y = y, label = factor(label))
 dat = data.frame(xobs = xobs, yobs = yobs, label = factor(label))
+
+# plot data
+ggplot(dat_under, aes(x = x, y = y, color = label)) +
+  geom_point()
+ggsave("plots/dat_underlying.pdf", height = 4, width = 7)
+
+ggplot(dat, aes(x = xobs, y = yobs, color = label)) +
+  geom_point()
+ggsave("plots/dat.pdf", height = 4, width = 7)
+
+
 # ###############################################################
 
 # missing completely at random

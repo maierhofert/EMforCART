@@ -42,7 +42,7 @@ EM_rpart = function (formula, data, nsteps = 10) {
   
   # EM algorithm
   for (it in 1:nsteps) {
-    # M step
+    # E step
     # impute missing values
     # create pseudo data that only contains imputed data
     # combined with the original data, the previously imputed values will be 
@@ -68,7 +68,7 @@ EM_rpart = function (formula, data, nsteps = 10) {
       select(-pseudo) %>%
       ungroup()
     
-    # E step
+    # ME step
     # fit model
     this.fit = rpart(formula, data = this.dat)
   }
