@@ -193,6 +193,7 @@ In pseudocode, this algorithm is:
 }}}
 
 \section{Simulation Study}
+\subsection{Data Generating Process}
 The methodology proposed in Section~\label{treatment_of_missing_values_in_cart} is compared using a simulations study.
 As the data generating process, an underlying two-dimensional random variable $(\tilde X, \tilde Y, C)$ is drawn as
 \begin{eqnarray}
@@ -207,7 +208,7 @@ C =
 2 & \text{ for } X \leq -0.5 \text{ or } X \geq 0.5,
 \end{cases}
 \end{eqnarray}
-see Figure~TODO.
+see Figure~\ref{fig:simu_data} (top).
 %
 The observed random variables $(X, Y, C)$ are observations of $(\tilde X, \tilde Y, C)$ with added random noise, 
 \begin{eqnarray}
@@ -215,8 +216,23 @@ X = \tilde X + \varepsilon_x, \nonumber \\
 Y = \tilde Y + \varepsilon_y, \nonumber \\
 \varepsilon_x, \varepsilon_y \iid N(0, 1),
 \end{eqnarray}
-see Figure~TODO.
+see Figure~\ref{fig:simu_data} (bottom).
 %
+\begin{figure}[hp]
+	\centering
+	\includegraphics[width=0.85\textwidth]{plots/dat_underlying.pdf}
+    \includegraphics[width=0.85\textwidth]{plots/dat.pdf}
+	\caption{Completely observed simulated data: Underlying data generating process (top) and noisy observed data (bottom).}
+	\label{fig:simu_data}
+\end{figure}
+
+\subsection{Introduction of Missing Values}
+For the purpose of this simulation missing values were introduced at random (MAR). The probability of missing observation $X_i$ or $Y_i$ is sampled to be proportional to $X_i$ or $Y_i$, i.e.\
+$$P(X_i \text{ missing}) \propto X_i.$$
+Observations with
+
+
+
 
 
 
