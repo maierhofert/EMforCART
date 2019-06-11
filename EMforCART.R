@@ -67,7 +67,8 @@ EM_rpart = function (formula, data, nsteps = 10) {
       filter(!pseudo) %>%
       select(-pseudo) %>%
       ungroup()
-    
+    # remove temporary leaf column
+    this.dat = this.dat[,-ncol(this.dat)]
     # ME step
     # fit model
     this.fit = rpart(formula, data = this.dat)
