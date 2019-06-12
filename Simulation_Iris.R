@@ -26,18 +26,13 @@ for (i in 1:length(missing_vec)) {
 dat
 
 plot(iris[1:4], col = as.numeric(iris[,5]) + 1)
+
 # install.packages("GGally")
 # Parallel coordinates plot using GGally
-library("GGally")
-mtcars2 <- mtcars %>%
-  select(mpg, disp, drat, wt, qsec)
-
-GGally::ggpairs(iris)
-
 # full iris data
 GGally::ggpairs(data = iris, columns = 1:4, 
                 ggplot2::aes(colour=Species, alpha = 0.7))
-ggsave("plots/iris_data.pdf", height = 12, width = 21)
+ggsave("plots/iris_data.pdf", height = 8, width = 14)
 
 
 # missingness iris data
@@ -45,6 +40,7 @@ tab_dat = data.frame(variable = colnames(iris),
                      missing = colMeans(is.na(dat)))
 ggplot(tab_dat[-5, ], aes(x = variable, y = missing)) +
   geom_bar(stat = "identity") +
+  scale_x_discrete(limits = c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width")) +
   xlab("% missing values")
 ggsave("plots/iris_data_missingness.pdf", height = 4, width = 7)
 
